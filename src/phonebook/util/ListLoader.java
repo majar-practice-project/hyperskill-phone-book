@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ListLoader {
+//    private final String FILE_DIR = "../test.txt";
     private final String FILE_DIR = "../directory.txt";
     private final String FIND_DIR = "../find.txt";
 
