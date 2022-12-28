@@ -1,19 +1,24 @@
 package phonebook;
 
-import phonebook.search.JumpSeaarcher;
+import phonebook.search.BinarySearch;
+import phonebook.search.HashTableSearch;
+import phonebook.search.JumpSearcher;
 import phonebook.search.LinearSearcher;
 import phonebook.search.sort.BubbleSort;
-import phonebook.util.ListLoader;
+import phonebook.search.sort.QuickSort;
+import phonebook.util.FileLoader;
 import phonebook.util.Timer;
 import phonebook.view.CommandView;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 
 public class Controller {
     private final CommandView view = new CommandView();
-    private final ListLoader loader = new ListLoader();
+    private final FileLoader loader = new FileLoader();
     private final Timer timer = new Timer();
     private long linearSearchTime;
 
@@ -24,6 +29,10 @@ public class Controller {
         performLinearSearch();
 
         performJumpSearch();
+
+        performBinarySearch();
+
+        performHashTableSearch();
     }
 
     public void performLinearSearch() {
@@ -32,7 +41,7 @@ public class Controller {
 
         searchList = loader.loadSearchList();
         targetList = loader.loadTargetList();
-        
+
         int foundEntries = new LinearSearcher().search(searchList, targetList);
         linearSearchTime = timer.stop();
 
@@ -40,7 +49,7 @@ public class Controller {
     }
 
     public void performJumpSearch() {
-        view.showBubbleSortAndJumpSearch();
+        view.showStartBubbleSortAndJumpSearch();
         timer.start();
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -48,7 +57,7 @@ public class Controller {
             try {
                 return new BubbleSort().sort(searchList, Comparator.naturalOrder());
             } catch (InterruptedException e) {
-                return null;
+                throw new InterruptedException();
             }
         });
 
@@ -57,7 +66,7 @@ public class Controller {
             long sortingTime = timer.stop();
 
             timer.start();
-            int foundEntries = new JumpSeaarcher().search(sortedList, targetList, Comparator.naturalOrder());
+            int foundEntries = new JumpSearcher().search(sortedList, targetList, Comparator.naturalOrder());
             long searchingTime = timer.stop();
 
             view.showSearchResult(foundEntries, targetList.size(), sortingTime + searchingTime);
@@ -68,6 +77,7 @@ public class Controller {
         } catch (TimeoutException e) {
             long sortingTime = timer.stop();
             future.cancel(true);
+            executor.shutdown();
 
             timer.start();
             int foundEntries = new LinearSearcher().search(searchList, targetList);
@@ -77,5 +87,35 @@ public class Controller {
             view.showSortingInterrupted(sortingTime);
             view.showSearchingTime(searchingTime);
         }
+    }
+
+    public void performBinarySearch() {
+        view.showStartQuickSortAndBinarySearch();
+        timer.start();
+        List<String> sortedList = new QuickSort().sort(searchList, Comparator.naturalOrder());
+        long sortingTime = timer.stop();
+
+        timer.start();
+        int foundEntries = new BinarySearch().search(sortedList, targetList, Comparator.naturalOrder());
+        long searchingTime = timer.stop();
+
+        view.showSearchResult(foundEntries, targetList.size(), sortingTime + searchingTime);
+        view.showSortingTime(sortingTime);
+        view.showSearchingTime(searchingTime);
+    }
+
+    public void performHashTableSearch() {
+        view.showStartHashTable();
+        timer.start();
+        Set<String> hashTable = new HashSet<>(searchList);
+        long creatingTime = timer.stop();
+
+        timer.start();
+        int foundEntries = new HashTableSearch().search(hashTable, targetList);
+        long searchingTime = timer.stop();
+
+        view.showSearchResult(foundEntries, targetList.size(), creatingTime + searchingTime);
+        view.showCreatingTime(creatingTime);
+        view.showSearchingTime(searchingTime);
     }
 }

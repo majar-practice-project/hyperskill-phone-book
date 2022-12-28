@@ -5,8 +5,16 @@ public class CommandView {
         System.out.println("Start searching (linear search)...");
     }
 
-    public void showBubbleSortAndJumpSearch(){
+    public void showStartBubbleSortAndJumpSearch(){
         System.out.println("Start searching (bubble sort + jump search)...");
+    }
+
+    public void showStartQuickSortAndBinarySearch(){
+        System.out.println("Start searching (quick sort + binary search)...");
+    }
+
+    public void showStartHashTable(){
+        System.out.println("Start searching (hash table)...");
     }
 
     public void showSearchResult(int foundEntries, int totalEntries, long timeTaken){
@@ -17,7 +25,7 @@ public class CommandView {
     }
 
     public void showSortingTime(long time){
-        System.out.printf("Sorting time: %s", formatTime(time));
+        System.out.printf("Sorting time: %s%n", formatTime(time));
     }
 
     public void showSortingInterrupted(long time){
@@ -26,6 +34,10 @@ public class CommandView {
 
     public void showSearchingTime(long time){
         System.out.printf("Searching time: %s%n", formatTime(time));
+    }
+
+    public void showCreatingTime(long time){
+        System.out.printf("Creating time: %s%n", formatTime(time));
     }
 
     private static String formatTime(long time){

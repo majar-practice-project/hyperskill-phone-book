@@ -3,7 +3,7 @@ package phonebook.search;
 import java.util.Comparator;
 import java.util.List;
 
-public class JumpSeaarcher {
+public class JumpSearcher {
     public <T> int search(List<T> list, List<T> targets, Comparator<T> comparator){
         return (int) targets.stream()
                 .filter(t -> jumpSearch(list, t, comparator))
